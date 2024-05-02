@@ -7,51 +7,49 @@ struct Location {
 }
 #[derive(Debug, Clone)]
 struct ClothingStore {
-    footwear_in_stock: HashMap<String, Footwear>,
-    t_shirts_in_stock: HashMap<String, TShirt>,
+    footwear_in_stock: Vec<Footwear>,
+    t_shirts_in_stock: Vec<TShirt>,
     location: Option<Location>,
     shop_area: usize
 }
 impl ClothingStore {
     fn builder() -> StoreBuilder {
         StoreBuilder {
-            footwear_in_stock: HashMap::new(),
-            t_shirts_in_stock: HashMap::new(),
+            footwear_in_stock: Vec::new(),
+            t_shirts_in_stock: Vec::new(),
             location: None,
             shop_area: None
         }
     }
 
-    fn get_particular_footwear(&mut self, name: String, brand: String, color: Color, shoe_size: usize) -> &Footwear {
-        match !self.footwear_in_stock.contains_key(&name) {
-            true => {
-                let shoe = self.footwear_in_stock.insert(name, Footwear {brand, color, shoe_size}).unwrap();
-                return &shoe
-            },
-            false => {
-                let shoe = self.footwear_in_stock.get(&name).unwrap();
-                return &shoe
-            }
+    fn get_particular_footwear(&mut self, brand: String, color: Color, shoe_size: usize) -> &Footwear {
+        if let Some(shoe) = self.footwear_in_stock.iter().find(|shoe| shoe.brand == brand && shoe.color == color && shoe.shoe_size == shoe_size) {
+            return shoe
         };
 
+        let new_shoe = Footwear {brand, color, shoe_size};
 
+        self.footwear_in_stock.push(new_shoe);
 
+        self.footwear_in_stock.last().unwrap()
     }
 
     fn get_particular_tshirt(&mut self, brand: String, color: Color, tshirt_size: usize) -> &TShirt {
-        if let Some(tshirt) = self.t_shirts_in_stock.iter_mut().find(|&tshirt| tshirt.brand == brand && tshirt.color == color && tshirt.tshirt_size == tshirt_size) {
+        if let Some(tshirt) = self.t_shirts_in_stock.iter().find(|tshirt| tshirt.brand == brand && tshirt.color == color && tshirt.tshirt_size == tshirt_size) {
             return tshirt
         };
 
         let new_tshirt = TShirt {brand, color, tshirt_size};
+
         self.t_shirts_in_stock.push(new_tshirt);
-        self.t_shirts_in_stock.last_mut().unwrap()
+
+        self.t_shirts_in_stock.last().unwrap()
     }
 }
 
 struct StoreBuilder {
-    footwear_in_stock: HashMap<String, Footwear>,
-    t_shirts_in_stock: HashMap<String, TShirt>,
+    footwear_in_stock: Vec<Footwear>,
+    t_shirts_in_stock: Vec<TShirt>,
     location: Option<Location>,
     shop_area: Option<usize>
 }
