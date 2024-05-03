@@ -19,8 +19,8 @@ impl Forest {
             weather: None
         }
     }
-    pub fn plant_tree(&mut self, location: Location, name: String, description: String, color: Color) {
-        let tree_kind = TreeKind::new(name, description, color);
+    pub fn plant_tree(&mut self, location: Location, name: String, color: Color) {
+        let tree_kind = TreeKind::new(name, color);
 
         self.tree_kinds.insert(Rc::new(tree_kind.clone()));
 

@@ -104,6 +104,19 @@ impl Sandbox for ForestState {
                             forest.add_area(area_usize);
                         }
 
+
+                        if forest_builder_page.is_rainy_weather_added == true {
+                            forest.add_weather(Weather::Rainy);
+                        }
+
+                        if forest_builder_page.is_sunny_weather_added == true {
+                            forest.add_weather(Weather::Sunny);
+                        }
+
+                        if forest_builder_page.is_gloomy_weather_added == true {
+                            forest.add_weather(Weather::Gloomy);
+                        }
+
                         *self = ForestCreated(forest.build());
                     }
                 }
@@ -154,7 +167,7 @@ impl Sandbox for ForestState {
             }
 
             ForestState::ForestCreated(forest) => {
-                todo!()
+
             }
         }
     }

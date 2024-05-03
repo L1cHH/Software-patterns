@@ -21,14 +21,12 @@ impl Location {
 #[derive(Debug, Eq, PartialEq, Hash, Clone)]
 pub struct TreeKind {
     name: String,
-    description: String,
     color: Color
 }
 impl TreeKind {
-    pub fn new(name: String, description: String, color: Color) -> Self {
+    pub fn new(name: String, color: Color) -> Self {
         Self {
             name,
-            description,
             color
         }
     }
@@ -50,14 +48,12 @@ impl Tree {
         let location = &self.location;
         let tree_kind = &self.tree_kind;
         let name = &tree_kind.name;
-        let description = &tree_kind.description;
         let color = &tree_kind.color;
         println!("Было выращено дерево => \r
             Вид: {},\r
             Цвет: {:?},\r
-            Местоположение: {:?},\r
-            Описание: {}",
-            name, color, location, description)
+            Местоположение: {:?}",
+            name, color, location)
     }
 }
 #[derive(Default, Debug, Clone)]
