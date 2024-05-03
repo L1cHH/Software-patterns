@@ -3,7 +3,7 @@ use iced::{alignment, Alignment, Element, Length, Sandbox, Settings, Size, windo
 use iced::Alignment::Center;
 use iced::alignment::{Horizontal, Vertical};
 use iced::theme::Button;
-use iced::widget::{button, Checkbox, column, Container, container, text, text_input, Column, Space};
+use iced::widget::{button, Checkbox, column, row, Container, container, text, text_input, Column, Space};
 use iced::widget::shader::wgpu::naga::FastIndexMap;
 use crate::forest_components::{Color, Location, Weather};
 use crate::model::{Forest};
@@ -40,7 +40,10 @@ impl Default for ForestState {
 #[derive(Debug, Clone)]
 enum ForestMessage {
     AreaInputChanged(String),
-    WeatherCheckBoxToggled(bool),
+    RainyCheckBoxToggled(bool),
+    SunnyCheckBoxToggled(bool),
+    GloomyCheckBoxToggled(bool),
+    WithoutCheckBoxToggled(bool),
     CreateForest
 }
 
@@ -59,8 +62,32 @@ impl Sandbox for ForestState {
         match self {
             ForestState::ForestCreating(forest_builder_page) => {
                 match message {
-                    ForestMessage::WeatherCheckBoxToggled(flag) => {
-                        forest_builder_page.is_weather_cb_checked = flag
+                    ForestMessage::RainyCheckBoxToggled(bool) => {
+                        forest_builder_page.is_rainy_weather_added = bool;
+                        forest_builder_page.is_sunny_weather_added = false;
+                        forest_builder_page.is_gloomy_weather_added = false;
+                        forest_builder_page.is_without_weather = false;
+                    },
+
+                    ForestMessage::SunnyCheckBoxToggled(bool) => {
+                        forest_builder_page.is_sunny_weather_added = bool;
+                        forest_builder_page.is_gloomy_weather_added = false;
+                        forest_builder_page.is_without_weather = false;
+                        forest_builder_page.is_rainy_weather_added = false;
+                    },
+
+                    ForestMessage::GloomyCheckBoxToggled(bool) => {
+                        forest_builder_page.is_gloomy_weather_added = bool;
+                        forest_builder_page.is_without_weather = false;
+                        forest_builder_page.is_rainy_weather_added = false;
+                        forest_builder_page.is_sunny_weather_added = false;
+                    },
+
+                    ForestMessage::WithoutCheckBoxToggled(bool) => {
+                        forest_builder_page.is_without_weather = bool;
+                        forest_builder_page.is_rainy_weather_added = false;
+                        forest_builder_page.is_sunny_weather_added = false;
+                        forest_builder_page.is_gloomy_weather_added = false;
                     },
 
                     ForestMessage::AreaInputChanged(area) => {
@@ -70,9 +97,7 @@ impl Sandbox for ForestState {
                     ForestMessage::CreateForest => {
                         let mut forest = Forest::builder();
 
-                        if forest_builder_page.is_weather_cb_checked == true {
-                            forest.add_weather(Weather::Rainy);
-                        }
+
 
                         if !forest_builder_page.input_area.clone().is_empty() {
                             let area_usize = forest_builder_page.input_area.parse::<usize>().expect("Error with parsing Area");
@@ -102,8 +127,17 @@ impl Sandbox for ForestState {
                     .size(15)
                     .on_input(ForestMessage::AreaInputChanged);
 
-                let weather_checkbox = Checkbox::new("Add Weather?", forest_builder_page.is_weather_cb_checked)
-                    .on_toggle(ForestMessage::WeatherCheckBoxToggled);
+                let rainy_checkbox = Checkbox::new("Add Rain", forest_builder_page.is_rainy_weather_added)
+                    .on_toggle(ForestMessage::RainyCheckBoxToggled);
+
+                let sunny_checkbox = Checkbox::new("Add Sun", forest_builder_page.is_sunny_weather_added)
+                    .on_toggle(ForestMessage::SunnyCheckBoxToggled);
+
+                let gloomy_checkbox = Checkbox::new("Add Gloom", forest_builder_page.is_gloomy_weather_added)
+                    .on_toggle(ForestMessage::GloomyCheckBoxToggled);
+
+                let without_checkbox = Checkbox::new("Without Weather", forest_builder_page.is_without_weather)
+                    .on_toggle(ForestMessage::WithoutCheckBoxToggled);
 
                 let create_btn = button("Create Forest")
                     .padding(20)
@@ -114,7 +148,7 @@ impl Sandbox for ForestState {
                     forest_label,
                     Space::with_height(15),
                     area_input,
-                    weather_checkbox,
+                    row![rainy_checkbox, sunny_checkbox, gloomy_checkbox, without_checkbox].spacing(10),
                     create_btn
                 ].spacing(20).align_items(Center)).width(Length::Fill).align_y(Vertical::Center).align_x(Horizontal::Center).into()
             }
