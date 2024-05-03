@@ -5,7 +5,7 @@ pub enum Color {
     Green,
     Brown,
 }
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Location {
     x: i32,
     y: i32
@@ -33,7 +33,7 @@ impl TreeKind {
         }
     }
 }
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Tree {
     location: Location,
     tree_kind: Rc<TreeKind>
@@ -60,7 +60,7 @@ impl Tree {
             name, color, location, description)
     }
 }
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone)]
 pub enum Weather {
     Rainy,
     #[default]

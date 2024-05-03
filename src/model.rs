@@ -2,6 +2,7 @@ use std::collections::HashSet;
 use std::rc::Rc;
 use crate::forest_components::{Color, TreeKind, Tree, Location, Weather};
 
+#[derive(Clone)]
 pub struct Forest {
     tree_kinds: HashSet<Rc<TreeKind>>,
     trees: Vec<Tree>,
@@ -34,7 +35,7 @@ impl Forest {
     }
 }
 
-struct ForestBuilder {
+pub struct ForestBuilder {
     tree_kinds: HashSet<Rc<TreeKind>>,
     trees: Vec<Tree>,
     forest_area: Option<usize>,
@@ -42,16 +43,16 @@ struct ForestBuilder {
 }
 
 impl ForestBuilder {
-    fn add_weather(&mut self, weather: Weather) -> &mut Self {
+    pub fn add_weather(&mut self, weather: Weather) -> &mut Self {
         self.weather = Some(weather);
         self
     }
 
-    fn add_area(&mut self, area: usize) -> &mut Self {
+    pub fn add_area(&mut self, area: usize) -> &mut Self {
         self.forest_area = Some(area);
         self
     }
-    fn build(&mut self) -> Forest {
+    pub fn build(&mut self) -> Forest {
         Forest {
             tree_kinds: self.tree_kinds.clone(),
             trees: self.trees.clone(),
