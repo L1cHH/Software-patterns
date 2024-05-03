@@ -1,75 +1,62 @@
-use std::collections::HashMap;
-use crate::catalog::{TShirt, Footwear, Color};
-#[derive(Debug, Clone)]
-struct Location {
-    city: String,
-    street: String
+use std::collections::HashSet;
+use std::rc::Rc;
+use crate::forest_components::{Color, TreeKind, Tree, Location, Weather};
+
+pub struct Forest {
+    tree_kinds: HashSet<Rc<TreeKind>>,
+    trees: Vec<Tree>,
+    forest_area: usize,
+    weather: Option<Weather>,
 }
-#[derive(Debug, Clone)]
-struct ClothingStore {
-    footwear_in_stock: Vec<Footwear>,
-    t_shirts_in_stock: Vec<TShirt>,
-    location: Option<Location>,
-    shop_area: usize
-}
-impl ClothingStore {
-    fn builder() -> StoreBuilder {
-        StoreBuilder {
-            footwear_in_stock: Vec::new(),
-            t_shirts_in_stock: Vec::new(),
-            location: None,
-            shop_area: None
+impl Forest {
+
+    pub fn builder() -> ForestBuilder {
+        ForestBuilder {
+            tree_kinds: HashSet::new(),
+            trees: Vec::new(),
+            forest_area: None,
+            weather: None
         }
     }
+    pub fn plant_tree(&mut self, location: Location, name: String, description: String, color: Color) {
+        let tree_kind = TreeKind::new(name, description, color);
 
-    fn get_particular_footwear(&mut self, brand: String, color: Color, shoe_size: usize) -> &Footwear {
-        if let Some(shoe) = self.footwear_in_stock.iter().find(|shoe| shoe.brand == brand && shoe.color == color && shoe.shoe_size == shoe_size) {
-            return shoe
-        };
+        self.tree_kinds.insert(Rc::new(tree_kind.clone()));
 
-        let new_shoe = Footwear {brand, color, shoe_size};
-
-        self.footwear_in_stock.push(new_shoe);
-
-        self.footwear_in_stock.last().unwrap()
+        let tree = Tree::new(location, self.tree_kinds.get(&tree_kind).unwrap().clone());
+        self.trees.push(tree);
     }
-
-    fn get_particular_tshirt(&mut self, brand: String, color: Color, tshirt_size: usize) -> &TShirt {
-        if let Some(tshirt) = self.t_shirts_in_stock.iter().find(|tshirt| tshirt.brand == brand && tshirt.color == color && tshirt.tshirt_size == tshirt_size) {
-            return tshirt
-        };
-
-        let new_tshirt = TShirt {brand, color, tshirt_size};
-
-        self.t_shirts_in_stock.push(new_tshirt);
-
-        self.t_shirts_in_stock.last().unwrap()
+    
+    pub fn tress_grown(&self) {
+        for tree in &self.trees {
+            tree.grown()
+        }
     }
 }
 
-struct StoreBuilder {
-    footwear_in_stock: Vec<Footwear>,
-    t_shirts_in_stock: Vec<TShirt>,
-    location: Option<Location>,
-    shop_area: Option<usize>
+struct ForestBuilder {
+    tree_kinds: HashSet<Rc<TreeKind>>,
+    trees: Vec<Tree>,
+    forest_area: Option<usize>,
+    weather: Option<Weather>,
 }
-impl StoreBuilder {
-    fn add_location(&mut self, location: Location) -> &mut Self {
-        self.location = Some(location);
+
+impl ForestBuilder {
+    fn add_weather(&mut self, weather: Weather) -> &mut Self {
+        self.weather = Some(weather);
         self
     }
 
-    fn add_shop_area(&mut self, shop_area: usize) -> &mut Self {
-        self.shop_area = Some(shop_area);
+    fn add_area(&mut self, area: usize) -> &mut Self {
+        self.forest_area = Some(area);
         self
     }
-
-    fn build(&mut self) -> ClothingStore {
-        ClothingStore {
-            footwear_in_stock: self.footwear_in_stock.clone(),
-            t_shirts_in_stock: self.t_shirts_in_stock.clone(),
-            location: self.location.clone(),
-            shop_area: self.shop_area.unwrap_or(0)
+    fn build(&mut self) -> Forest {
+        Forest {
+            tree_kinds: self.tree_kinds.clone(),
+            trees: self.trees.clone(),
+            forest_area: self.forest_area.unwrap_or(100),
+            weather: self.weather.clone()
         }
     }
 }
