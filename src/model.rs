@@ -4,10 +4,10 @@ use crate::forest_components::{Color, TreeKind, Tree, Location, Weather};
 
 #[derive(Clone)]
 pub struct Forest {
-    tree_kinds: HashSet<Rc<TreeKind>>,
-    trees: Vec<Tree>,
-    forest_area: usize,
-    weather: Option<Weather>,
+    pub tree_kinds: HashSet<Rc<TreeKind>>,
+    pub trees: Vec<Tree>,
+    pub forest_area: usize,
+    pub weather: Option<Weather>,
 }
 impl Forest {
 

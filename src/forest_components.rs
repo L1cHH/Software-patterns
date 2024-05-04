@@ -4,6 +4,7 @@ use std::rc::Rc;
 pub enum Color {
     Green,
     Brown,
+    Unknown
 }
 #[derive(Debug, Clone)]
 pub struct Location {
